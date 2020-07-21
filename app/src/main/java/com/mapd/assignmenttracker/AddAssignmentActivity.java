@@ -6,20 +6,26 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class AddAssignmentActivity extends AppCompatActivity {
     EditText subjectEditText, titleEditText;
     TextView dueDateEditText;
     String subject;
+    String url = "https://assignment-tracker-d890b.firebaseio.com/assignments/assignmentList/";
     String title;
     long dueDate;
     @Override
@@ -76,6 +82,26 @@ public class AddAssignmentActivity extends AppCompatActivity {
                                         "\"subject\" : \"" + subject +"\", " +
                                         "\"title\" : \"" + title +"\"}";
             Log.e("jsons",jsonAssignment);
+
+
+//            final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+//
+//            OkHttpClient client = new OkHttpClient();
+//
+//            String post((url+key+".json"), jsonAssignment) {
+//                RequestBody body = RequestBody.create(jsonAssignment, JSON);
+//                Request request = new Request.Builder()
+//                        .url(url)
+//                        .post(body)
+//                        .build();
+//                try (Response response = client.newCall(request).execute()) {
+//                    return response.body().string();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+
+
 //            {
 //                "datePosted" : 20200710,
 //                    "dueDate" : 20200725,
