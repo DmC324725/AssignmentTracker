@@ -36,14 +36,10 @@ public class AddAssignmentActivity extends AppCompatActivity {
             }
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
-
         dueDateEditText.setOnClickListener(v -> StartTime.show());
 
-        }
-
-
-    public void showDatePicker(View view){
-        //Show a date picker and then return the value of the selected date back to the date textview
-
     }
+
+
+
 }
