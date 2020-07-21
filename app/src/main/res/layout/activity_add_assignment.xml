@@ -90,6 +90,7 @@
         android:textSize="18sp"
         android:paddingHorizontal="20dp"
         android:textStyle="bold"
+        android:onClick="addAssignment"
         android:textColor="#fff"
         android:background="@drawable/rounded_button"
         app:layout_constraintEnd_toStartOf="@+id/guidelineEnd"

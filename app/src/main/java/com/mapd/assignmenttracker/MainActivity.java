@@ -25,6 +25,11 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+        /*
+        //GET REQUEST FROM RETROFIT
+
+
         ServiceGenerator.getService().getAssignments().enqueue(new Callback<AssignmentWrapper>() {
             @Override
             public void onResponse(Call<AssignmentWrapper> call, Response<AssignmentWrapper> response) {
@@ -34,8 +39,6 @@ public class MainActivity extends AppCompatActivity {
                      result = response.body().getResults().toString();
                      Log.e("Response",response.body().getResults().get(0).getSubject());
                     Log.e("Code:", result);
-                    TextView textView = findViewById(R.id.textView);
-                    textView.setText(result);
                 }
             }
 
@@ -48,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         });
         //"https://assignment-tracker-d890b.firebaseio.com/assignments.json"
 
-
+        */
 
     }
 
