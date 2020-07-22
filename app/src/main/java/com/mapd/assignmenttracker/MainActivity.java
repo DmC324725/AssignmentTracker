@@ -29,6 +29,9 @@ public class MainActivity extends AppCompatActivity {
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        AssignmentListAdapter adapter = new AssignmentListAdapter();
+        binding.recyclerView.setAdapter(adapter);
+
         //GET REQUEST FROM RETROFIT
 
 
@@ -41,6 +44,8 @@ public class MainActivity extends AppCompatActivity {
                      result = response.body().getResults().toString();
                      Log.e("Response",response.body().getResults().get(0).getSubject());
                     Log.e("Code:", result);
+//                    adapter.setAssignmentList(response.body().getResults());
+//                    adapter.notifyDataSetChanged();
 
                 }
             }
