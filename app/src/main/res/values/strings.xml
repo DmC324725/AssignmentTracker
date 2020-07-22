@@ -3,4 +3,6 @@
     <string name="subject_name">Subject Name</string>
     <string name="title">Title</string>
     <string name="due_date">Due Date</string>
+    <string name="main_title">" %s %s"</string>
+    <string name="due_date_assign">"Due Date: %s"</string>
 </resources>

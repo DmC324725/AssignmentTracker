@@ -30,8 +30,8 @@ public class Assignment {
         return key;
     }
 
-    public Double getDueDate() {
-        return dueDate;
+    public String getDueDate() {
+        return dueDate.toString();
     }
 
     public String getSubject() {
