@@ -38,14 +38,14 @@ public class MainActivity extends AppCompatActivity {
         ServiceGenerator.getService().getAssignments().enqueue(new Callback<AssignmentWrapper>() {
             @Override
             public void onResponse(Call<AssignmentWrapper> call, Response<AssignmentWrapper> response) {
-                String result;
+//                String result;
 
                 if(response.body() != null && response.isSuccessful()){
-                     result = response.body().getResults().toString();
-                     Log.e("Response",response.body().getResults().get(0).getSubject());
-                    Log.e("Code:", result);
-//                    adapter.setAssignmentList(response.body().getResults());
-//                    adapter.notifyDataSetChanged();
+//                     result = response.body().getResults().toString();
+//                     Log.e("Response",response.body().getResults().get(0).getSubject());
+//                    Log.e("Code:", result);
+                    adapter.setAssignmentList(response.body().getResults());
+                    adapter.notifyDataSetChanged();
 
                 }
             }
