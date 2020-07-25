@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:padding="10dp"
+    android:layout_margin="10dp"
+    app:cardElevation="10dp"
+    app:cardCornerRadius="5dp"
+    android:layout_height="wrap_content">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/assignment_subject_textView"
+        android:layout_width="match_parent"
+        android:padding="5dp"
+        android:textAlignment="center"
+        android:textSize="25sp"
+        android:background="#fff"
+        android:text="Subject"
+        android:textColor="@color/textDark"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:background="#fff"
+        android:textSize="20sp"
+        android:id="@+id/assignment_title_textView"
+        android:text="Assignment 277"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:id="@+id/assignmentInternalLinearLayout"
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@color/blue"
+        android:orientation="horizontal">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:background="#fff"
+            android:layout_margin="1dp"
+            android:padding="3dp"
+            android:layout_weight="10"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="Date Posted"
+                android:layout_width="match_parent"
+                android:textAlignment="center"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:text="July 1, 2020"
+                android:id="@+id/assignment_datePosted_TextView"
+                android:textColor="@color/textDark"
+                android:textAlignment="center"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:padding="3dp"
+            android:layout_margin="1dp"
+            android:layout_weight="10"
+            android:background="#fff"
+            android:layout_height="wrap_content">
+            <TextView
+                android:text="Due Date"
+                android:layout_width="match_parent"
+                android:textAlignment="center"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:layout_width="match_parent"
+                android:text="July 1, 2020"
+                android:textColor="@color/textDark"
+                android:id="@+id/assignment_dueDate_TextView"
+                android:textAlignment="center"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
+</androidx.cardview.widget.CardView>

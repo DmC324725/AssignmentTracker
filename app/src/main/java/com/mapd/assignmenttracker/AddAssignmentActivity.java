@@ -3,15 +3,24 @@ package com.mapd.assignmenttracker;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONObject;
+
+import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -24,27 +33,51 @@ import okhttp3.Response;
 public class AddAssignmentActivity extends AppCompatActivity {
     EditText subjectEditText, titleEditText;
     TextView dueDateEditText;
+    Boolean isEditing = false;
     String subject;
-    String url = "https://assignment-tracker-d890b.firebaseio.com/assignments/assignmentList/";
+    String url = "https://assignment-tracker-d890b.firebaseio.com/assignments/assignmentList.json";
     String title;
-    long dueDate;
+
+    String initSubject, initTitle, initDueDate;
+    long dueDate, currentDate, key;
+    SimpleDateFormat formatter;
+    Context mContext;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_assignment);
-
+        initSubject = initTitle = initDueDate = "";
+        currentDate = key = 0;
+        mContext = AddAssignmentActivity.this;
+        formatter = new SimpleDateFormat("dd MMM, yyyy");
         //Initiating the EditTexts
         subjectEditText = findViewById(R.id.subjectEditText);
         titleEditText = findViewById(R.id.titleEditText);
         dueDateEditText = findViewById(R.id.dueDateEditText);
 
+        ArrayList<String> assignmentPassed = getIntent().getStringArrayListExtra("assignment");
+        if(assignmentPassed != null){
+            isEditing = true;
+            subjectEditText.setText(assignmentPassed.get(0));
+            titleEditText.setText(assignmentPassed.get(1));
+            dueDateEditText.setText(assignmentPassed.get(2));
+            key = Long.parseLong(assignmentPassed.get(4));
+
+            initSubject = assignmentPassed.get(0);
+            initTitle = assignmentPassed.get(1);
+            initDueDate = assignmentPassed.get(2);
+
+            //call a function to fill the fields with previous data
+        }
 
         final Calendar newCalendar = Calendar.getInstance();
         DatePickerDialog StartTime = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
             public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
                 Calendar newDate = Calendar.getInstance();
                 newDate.set(year, monthOfYear, dayOfMonth);
-                dueDateEditText.setText(DateFormat.getDateInstance(DateFormat.SHORT).format(newDate.getTime()));
+
+                String strDate = formatter.format(newDate.getTime());
+                dueDateEditText.setText(strDate);
             }
 
         }, newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
@@ -61,76 +94,97 @@ public class AddAssignmentActivity extends AppCompatActivity {
         subject = subjectEditText.getText().toString().trim();
         title = titleEditText.getText().toString().trim();
         dueDate = getFormattedDate(dueDateEditText.getText().toString());
-        //Check for consistency
-        Log.e("Subject",subject);
-        Log.e("Title",title);
-        Log.e("dateFormatted",dueDate+"");
+        currentDate = getFormattedDate(formatter.format(new Date()));
 
-
-
-        //Create a JSON String for Assignment Item
+        if(isEditing && initSubject.equals(subject) && initTitle.equals(title) && initDueDate.equals(dueDateEditText.getText().toString())){
+            Log.e("noChange","No Change Made");
+            finish();
+            return;
+        }
         if(checkInput()){
+            if(key == 0)
+                key = System.currentTimeMillis();
+            sendPost((url),jsonString());
+            Toast.makeText(AddAssignmentActivity.this,"Assignment has been added!",Toast.LENGTH_LONG).show();
 
-            Long key = System.currentTimeMillis();
-            Long currentDate = getFormattedDate(DateFormat.getDateInstance(DateFormat.SHORT).format(new Date()));
-            Log.e("key",key+"");
-            Log.e("currentDate",currentDate+"");
-
-            String jsonAssignment = "{ \"datePosted\" : "+currentDate+", " +
-                                        "\"dueDate\" : "+dueDate+"," +
-                                        "\"key\" : " + key +", " +
-                                        "\"subject\" : \"" + subject +"\", " +
-                                        "\"title\" : \"" + title +"\"}";
-            Log.e("jsons",jsonAssignment);
-
-
-//            final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-//
-//            OkHttpClient client = new OkHttpClient();
-//
-//            String post((url+key+".json"), jsonAssignment) {
-//                RequestBody body = RequestBody.create(jsonAssignment, JSON);
-//                Request request = new Request.Builder()
-//                        .url(url)
-//                        .post(body)
-//                        .build();
-//                try (Response response = client.newCall(request).execute()) {
-//                    return response.body().string();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-
-
-//            {
-//                "datePosted" : 20200710,
-//                    "dueDate" : 20200725,
-//                    "key" : 12309712,
-//                    "subject" : "Android",
-//                    "title" : "Assignment 5"
-//            }
-
-
+            clearInputs();
+        }else{
+            Toast.makeText(AddAssignmentActivity.this,"Please enter valid inputs",Toast.LENGTH_LONG).show();
         }
     }
+
+    public String jsonString(){
+
+        return "{ \""+key+"\":{ \"datePosted\" : "+currentDate+", " +
+                "\"dueDate\" : "+dueDate+"," +
+                "\"key\" : " + key +", " +
+                "\"subject\" : \"" + subject +"\", " +
+                "\"title\" : \"" + title +"\"}}";
+    }
+
+    public void sendPost(String urlAdress, String jsonString) {
+        Thread thread = new Thread(() -> {
+            try {
+                URL url = new URL(urlAdress);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("PATCH");
+                conn.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+                conn.setRequestProperty("Accept","application/json");
+                conn.setDoOutput(true);
+                conn.setDoInput(true);
+                DataOutputStream os = new DataOutputStream(conn.getOutputStream());
+                os.writeBytes(jsonString);
+
+                os.flush();
+                os.close();
+
+                Log.e("STATUS", String.valueOf(conn.getResponseCode()));
+                Log.e("MSG" , conn.getResponseMessage());
+                if(conn.getResponseCode() == 200){
+                    finish();
+                }
+
+                conn.disconnect();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("PostFailed",e.getMessage()+"");
+            }
+        });
+
+        thread.start();
+    }
+
+
+    public void exitAssignment(View view){
+        finish();
+    }
+    public void clearInputs(){
+        subjectEditText.setText("");
+        titleEditText.setText("");
+        dueDateEditText.setText("");
+    }
     public boolean checkInput(){
-        return !subject.isEmpty() && !title.isEmpty() && dueDate != 0;
+        return !subject.isEmpty() && !title.isEmpty() && dueDate != 0 && dueDate>currentDate;
     }
     public long getFormattedDate(String date){
-        //mm/dd/yy => yyyymmdd
         if(!date.equals("")) {
-        String[] split = date.split("/");
-
-            String day = split[1];
-            String month = split[0];
-            String year = "20" + split[2];
-
-            if (day.length() == 1){
-                day = "0"+ day;
+            Log.e("initDate",date);
+            String[] months ={"","Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"};
+            String month=date.substring(3,6);
+            for(int i=0;i<months.length;i++) {
+                if(months[i].equals(month)){
+                    month =i+"";
+                }
             }
-            if (month.length() == 1){
-                month = "0"+ month;
-            }
+            if(month.length()==1)
+                month = "0"+month;
+            //
+            String day = date.substring(0,2);
+            String year = date.substring(8);
+            Log.e("day",day+",");
+            Log.e("month",month+",");
+            Log.e("year",year+",");
+
             return Long.parseLong(year+month+day);
         }
         return 0;
